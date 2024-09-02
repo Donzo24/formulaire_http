@@ -55,6 +55,7 @@ class _LoginPageState extends State<LoginPage>
               padding: EdgeInsets.all(10),
               child: FormBuilderTextField(
                 name: "password",
+                obscureText: true,
                 decoration: InputDecoration(
                   labelText: "Mot de passe",
                   prefixIcon: Icon(Icons.lock
