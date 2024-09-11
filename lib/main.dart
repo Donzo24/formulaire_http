@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: session.hasData('token') ? HomePage():LoginPage(),
+      home: session.hasData('token') ? const HomePage():const LoginPage(),
     );
   }
 }

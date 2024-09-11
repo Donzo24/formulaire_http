@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  var _formKey = GlobalKey<FormBuilderState>();
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
@@ -41,10 +41,10 @@ class _LoginPageState extends State<LoginPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: FormBuilderTextField(
                 name: "email",
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Email",
                   prefixIcon: Icon(Icons.mail)
                 ),
@@ -52,11 +52,11 @@ class _LoginPageState extends State<LoginPage>
             ),
 
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: FormBuilderTextField(
                 name: "password",
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Mot de passe",
                   prefixIcon: Icon(Icons.lock
                   )
@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage>
             ),
 
             Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: ElevatedButton(
                 onPressed: () {
                   // if()
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage>
                   }
                   // login();
                 },
-                child: Text("Connexion")
+                child: const Text("Connexion")
               ),
             )
           ],
@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage>
       GetStorage session = GetStorage();
       session.write("token", token['token']);
 
-      Get.offAll(() => HomePage());
+      Get.offAll(() => const HomePage());
     } else {
       //Erreur
       Get.snackbar(
