@@ -7,8 +7,10 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formulaire_http/models/utilisateur.dart';
 import 'package:formulaire_http/screens/login_page.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
@@ -52,6 +54,20 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text("GPS"),
+        actions: [
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: IconButton(
+              icon: Icon(Icons.location_on),
+              onPressed: () {
+                getPosition();
+              },
+            ),
+          )
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           addUser();
@@ -393,6 +409,61 @@ class _HomePageState extends State<HomePage>
     );
 
     return image;
+  }
+  
+  Future<void> getPosition() async {
+
+    bool locationServiceStatus = await Geolocator.isLocationServiceEnabled();
+
+    if(!locationServiceStatus) {
+      Get.snackbar("Erreur GPS", "Merci d'activer la geolocalisation");
+      return;
+    }
+
+    print(locationServiceStatus);
+
+    await Geolocator.requestPermission();
+
+    var permision = await Geolocator.checkPermission();
+    
+
+    if(permision == LocationPermission.denied) {
+      Get.snackbar("Erreur GPS", "Meci d'autoriser");
+      await Geolocator.openAppSettings();
+    }
+
+    //Recuperer la position
+    Position position = await Geolocator.getCurrentPosition();
+
+    print(position.latitude);
+    print(position.longitude);
+    print(position.accuracy);
+
+    openMap(position: position);
+
+  }
+  
+  Future<void> openMap({required Position position}) async {
+    await Get.bottomSheet(
+      Container(
+        height: MediaQuery.of(context).size.height/1.5,
+        width: double.infinity,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(position.latitude, position.longitude),
+              zoom: 14
+            ),
+            onMapCreated: (controller) {
+              
+            },
+
+          ),
+        ),
+      )
+    );
   }
 
   
