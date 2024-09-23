@@ -49,5 +49,7 @@
 	<string>Nous avons besoin de votre permission pour acceder au GPS</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app requires Mic permission.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Autoriser l'app a acceder au micro de votre telephone</string>
 </dict>
 </plist>
