@@ -168,7 +168,7 @@ class _AudioPageState extends State<AudioPage>
               ),
         
               createText(
-                text: "$minute:$secondes",
+                text: "${minute.toString().padLeft(2, '0')}:$secondes",
                 fontSize: 14
               ),
               Padding(
