@@ -43,6 +43,9 @@ dependencies:
   image_picker: ^1.1.2
   geolocator: ^13.0.1
   google_maps_flutter: ^2.9.0
+  # audio_waveforms: ^1.0.5
+  flutter_smart_dialog: ^4.9.8+2
+  file_picker: ^8.1.2
 
 dev_dependencies:
   flutter_test:

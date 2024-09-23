@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formulaire_http/models/utilisateur.dart';
 import 'package:formulaire_http/screens/login_page.dart';
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage>
   late AnimationController _controller;
 
   List<Utilisateur> users = [];
+
 
   @override
   void initState() {
@@ -70,7 +72,11 @@ class _HomePageState extends State<HomePage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          addUser();
+          // addUser();
+
+           // Check mic permission (also called during record)
+          // await controller.pause();                                  // Pause recording
+          // final path = await controller.stop(); 
         },
         child: const Icon(Icons.add),
       ),
@@ -78,6 +84,7 @@ class _HomePageState extends State<HomePage>
                 itemCount: users.length,
                 itemBuilder: (context, index) {
                   Utilisateur user = users[index];
+
 
                   return Padding(
                     padding: const EdgeInsets.all(10),
@@ -413,14 +420,16 @@ class _HomePageState extends State<HomePage>
   
   Future<void> getPosition() async {
 
+    SmartDialog.showLoading(
+      msg: "Patienter..."
+    );
+
     bool locationServiceStatus = await Geolocator.isLocationServiceEnabled();
 
     if(!locationServiceStatus) {
       Get.snackbar("Erreur GPS", "Merci d'activer la geolocalisation");
       return;
     }
-
-    print(locationServiceStatus);
 
     await Geolocator.requestPermission();
 
@@ -435,9 +444,7 @@ class _HomePageState extends State<HomePage>
     //Recuperer la position
     Position position = await Geolocator.getCurrentPosition();
 
-    print(position.latitude);
-    print(position.longitude);
-    print(position.accuracy);
+    SmartDialog.dismiss();
 
     openMap(position: position);
 

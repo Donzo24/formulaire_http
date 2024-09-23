@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:formulaire_http/screens/file_picker.dart';
 import 'package:formulaire_http/screens/home_page.dart';
 import 'package:formulaire_http/screens/login_page.dart';
 import 'package:get/get.dart';
@@ -26,7 +28,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: session.hasData('token') ? const HomePage():const LoginPage(),
+      home: session.hasData('token') ? const FilePickerPage():const LoginPage(),
+      builder: FlutterSmartDialog.init(),
+      navigatorObservers: [
+        FlutterSmartDialog.observer
+      ],
     );
   }
 }
