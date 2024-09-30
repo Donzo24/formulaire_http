@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:formulaire_http/database.dart';
+import 'package:formulaire_http/entity/tache.dart';
 import 'package:formulaire_http/screens/audio_page.dart';
-import 'package:formulaire_http/screens/file_picker.dart';
-import 'package:formulaire_http/screens/home_page.dart';
-import 'package:formulaire_http/screens/login_page.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 Future<void> main() async {
 
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+
+  await database.tacheDao.insertTache(Tache(1, "Tahe 1", "hsjjjsl"));
+
+  List<Tache> taches = await database.tacheDao.findAllTaches();
+
+  print(taches);
+
+    
   await GetStorage.init();
   runApp(MyApp());
 }
