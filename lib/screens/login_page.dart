@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage>
       GetStorage session = GetStorage();
       session.write("token", token['token']);
 
-      Get.offAll(() => const HomePage());
+      // Get.offAll(() => const HomePage());
     } else {
       //Erreur
       Get.snackbar(

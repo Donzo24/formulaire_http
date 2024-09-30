@@ -4,11 +4,11 @@ import 'package:floor/floor.dart';
 
 @entity
 class Tache {
-  @primaryKey
-  final int id;
+  @PrimaryKey(autoGenerate: true)
+  final int? id;
   final String title;
   final String description;
 
-  Tache(this.id, this.title, this.description);
+  Tache({this.id, required this.title, required this.description});
 
 }

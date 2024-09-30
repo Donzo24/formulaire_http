@@ -13,5 +13,13 @@ abstract class TacheDao {
 
   @insert
   Future<void> insertTache(Tache tache);
+
+  @delete
+  Future<void> deleteTache(Tache tache);
+
+  @Update(
+    onConflict: OnConflictStrategy.replace
+  )
+  Future<void> updateTache(Tache tache);
   
 }

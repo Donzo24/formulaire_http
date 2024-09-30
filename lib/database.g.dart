@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Tache` (`id` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Tache` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `description` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -122,6 +122,24 @@ class _$TacheDao extends TacheDao {
                   'id': item.id,
                   'title': item.title,
                   'description': item.description
+                }),
+        _tacheUpdateAdapter = UpdateAdapter(
+            database,
+            'Tache',
+            ['id'],
+            (Tache item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'description': item.description
+                }),
+        _tacheDeletionAdapter = DeletionAdapter(
+            database,
+            'Tache',
+            ['id'],
+            (Tache item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'description': item.description
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -132,23 +150,41 @@ class _$TacheDao extends TacheDao {
 
   final InsertionAdapter<Tache> _tacheInsertionAdapter;
 
+  final UpdateAdapter<Tache> _tacheUpdateAdapter;
+
+  final DeletionAdapter<Tache> _tacheDeletionAdapter;
+
   @override
   Future<List<Tache>> findAllTaches() async {
     return _queryAdapter.queryList('SELECT * FROM Tache',
-        mapper: (Map<String, Object?> row) => Tache(row['id'] as int,
-            row['title'] as String, row['description'] as String));
+        mapper: (Map<String, Object?> row) => Tache(
+            id: row['id'] as int?,
+            title: row['title'] as String,
+            description: row['description'] as String));
   }
 
   @override
   Future<Tache?> findById(int id) async {
     return _queryAdapter.query('SELECT * FROM Tache WHERE id = ?1',
-        mapper: (Map<String, Object?> row) => Tache(row['id'] as int,
-            row['title'] as String, row['description'] as String),
+        mapper: (Map<String, Object?> row) => Tache(
+            id: row['id'] as int?,
+            title: row['title'] as String,
+            description: row['description'] as String),
         arguments: [id]);
   }
 
   @override
   Future<void> insertTache(Tache tache) async {
     await _tacheInsertionAdapter.insert(tache, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateTache(Tache tache) async {
+    await _tacheUpdateAdapter.update(tache, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> deleteTache(Tache tache) async {
+    await _tacheDeletionAdapter.delete(tache);
   }
 }

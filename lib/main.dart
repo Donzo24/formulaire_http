@@ -3,6 +3,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:formulaire_http/database.dart';
 import 'package:formulaire_http/entity/tache.dart';
 import 'package:formulaire_http/screens/audio_page.dart';
+import 'package:formulaire_http/screens/home_page.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -12,21 +13,22 @@ Future<void> main() async {
 
   final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
 
-  await database.tacheDao.insertTache(Tache(1, "Tahe 1", "hsjjjsl"));
+  // await database.tacheDao.insertTache(Tache(1, "Tahe 1", "hsjjjsl"));
 
-  List<Tache> taches = await database.tacheDao.findAllTaches();
+  // List<Tache> taches = await database.tacheDao.findAllTaches();
 
-  print(taches);
-
+  // print(taches);
     
   await GetStorage.init();
-  runApp(MyApp());
+  runApp(MyApp(database: database));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  MyApp({super.key, required this.database});
 
   GetStorage session = GetStorage();
+
+  AppDatabase database;
 
   // This widget is the root of your application.
   @override
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: AudioPage(),
+      home: HomePage(database: database),
       builder: FlutterSmartDialog.init(),
       navigatorObservers: [
         FlutterSmartDialog.observer

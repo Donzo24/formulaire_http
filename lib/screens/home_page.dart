@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:formulaire_http/database.dart';
+import 'package:formulaire_http/entity/tache.dart';
 import 'package:formulaire_http/models/utilisateur.dart';
 import 'package:formulaire_http/screens/login_page.dart';
 import 'package:geolocator/geolocator.dart';
@@ -16,7 +18,9 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  HomePage({super.key, required this.database});
+  
+  AppDatabase database;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -26,7 +30,9 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  List<Utilisateur> users = [];
+  // List<Utilisateur> users = [];
+
+  // List<Tache> taches = [];
 
 
   @override
@@ -34,17 +40,19 @@ class _HomePageState extends State<HomePage>
     super.initState();
     _controller = AnimationController(vsync: this);
 
-    _getUser();
+    // _getUser();
+
+    // getTaches();
   }
 
-  _getUser() async {
+  // _getUser() async {
 
-    getUsers().then((data) {
-        setState(() {
-            users = data;
-        });
-    });      
-  }
+  //   getUsers().then((data) {
+  //       setState(() {
+  //           users = data;
+  //       });
+  //   });      
+  // }
 
   @override
   void dispose() {
@@ -72,7 +80,7 @@ class _HomePageState extends State<HomePage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // addUser();
+          addUser();
 
            // Check mic permission (also called during record)
           // await controller.pause();                                  // Pause recording
@@ -80,11 +88,21 @@ class _HomePageState extends State<HomePage>
         },
         child: const Icon(Icons.add),
       ),
-      body: ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (context, index) {
-                  Utilisateur user = users[index];
+      body: FutureBuilder(
+        future: widget.database.tacheDao.findAllTaches(), 
+        builder: (context, snapshot) {
 
+          if(!snapshot.hasData) {
+            return SizedBox();
+          }
+
+          List<Tache> taches = snapshot.data!;
+          
+          return ListView.builder(
+                itemCount: taches.length,
+                itemBuilder: (context, index) {
+
+                  Tache tache = taches[index];
 
                   return Padding(
                     padding: const EdgeInsets.all(10),
@@ -110,7 +128,7 @@ class _HomePageState extends State<HomePage>
                           
                         } else if(direction == DismissDirection.endToStart) {
                           //Supression
-                          deleteUser(user: user);
+                          // deleteUser(user: user);
                         }
 
                       },
@@ -118,7 +136,7 @@ class _HomePageState extends State<HomePage>
                         bool resultat = await Get.dialog(
                             CupertinoAlertDialog(
                               title: const Text("Confirmation"),
-                              content: Text("Merci de confirmer la suppression de l'utisation ${user.firstName} ?"),
+                              content: Text("Merci de confirmer la suppression de l'utisation?"),
                               actions: [
 
                                 TextButton(
@@ -143,13 +161,13 @@ class _HomePageState extends State<HomePage>
                       key: UniqueKey(),
                       child: Card(
                         child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              user.avatar
-                            ),
-                          ),
-                          title: Text("${user.firstName} ${user.lastName}"),
-                          subtitle: Text(user.email),
+                          // leading: CircleAvatar(
+                          //   backgroundImage: NetworkImage(
+                          //     user.avatar
+                          //   ),
+                          // ),
+                          title: Text(tache.title),
+                          subtitle: Text(tache.description),
                           trailing: SizedBox(
                             height: 100,
                             width: 100,
@@ -158,15 +176,15 @@ class _HomePageState extends State<HomePage>
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: () {
-                                    addUser(
-                                      user: user
-                                    );
+                                    // addUser(
+                                    //   user: user
+                                    // );
                                   },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete,color: Colors.red),
                                   onPressed: () {
-                                    confirmDeleteUser(user: user);
+                                    // confirmDeleteUser(user: user);
                                   },
                                 )
                               ],
@@ -177,11 +195,13 @@ class _HomePageState extends State<HomePage>
                     ),
                   );
                 },
-              )
+              );
+        },
+      )
     );
   }
   
-  Future<void> addUser({Utilisateur? user}) async {
+  Future<void> addUser({Tache? tache}) async {
     var formKey = GlobalKey<FormBuilderState>();
 
     XFile? image;
@@ -230,33 +250,23 @@ class _HomePageState extends State<HomePage>
                       ),
 
                       createTextForm(
-                        value: user?.firstName,
-                        name: "name",
-                        label: "Prenom",
+                        value: tache?.title,
+                        name: "titre",
+                        label: "Titre",
                         validator: [
                           FormBuilderValidators.required(),
-                          // FormBuilderValidators.min(2),
                           FormBuilderValidators.alphabetical()
                         ]
                       ),
                       createTextForm(
-                        value: user?.firstName,
-                        name: "job",
-                        label: "Job",
+                        value: tache?.description,
+                        name: "description",
+                        label: "Description",
                         validator: [
                           FormBuilderValidators.required(),
-                          // FormBuilderValidators.min(2)
                         ]
                       ),
-                      createTextForm(
-                        value: user?.email,
-                        name: "email",
-                        label: "Email",
-                        validator: [
-                          FormBuilderValidators.required(),
-                          FormBuilderValidators.email()
-                        ]
-                      ),
+                      
                       Padding(
                         padding: const EdgeInsets.all(10),
                         child: ElevatedButton(
@@ -264,41 +274,17 @@ class _HomePageState extends State<HomePage>
                           onPressed: () async {
                             if(formKey.currentState!.saveAndValidate()) {
                               var data = formKey.currentState!.value;
-          
-                              if(user != null) {
-                                //Update
-                              } else {
-                                //Ajout
-                              }
-          
-                              http.Response response = await http.post(
-                                Uri.parse("https://reqres.in/api/users"),
-                                body: data
-                              );
-          
-                              if(response.statusCode == 201) {
-                                print(response.body);
-                                var data = jsonDecode(response.body);
-          
-                                data['first_name'] = data['name'];
-                                data['id'] = int.parse(data['id']);
-                                data['last_name'] = data['name'];
-                                data['avatar'] = "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png";
-          
-                                Utilisateur user = Utilisateur.fromJson(data);
-          
-                                setState(() {
-                                  users.add(user);
-                                });
-          
-                                Get.back();
-          
-                              } else {
-                                Get.snackbar(
-                                  "Une erreur s'est produit", 
-                                  "Une erreur s'est produit"
-                                );
-                              }
+
+                              // print(data);
+
+                              var tache = Tache(title: data['titre'], description: data['description']);
+
+                              await widget.database.tacheDao.insertTache(tache);
+                              formKey.currentState!.reset();
+                              this.setState(() {});
+                              // getTaches();
+
+                              // print("Succes");
           
                               // print(data);
                             }
