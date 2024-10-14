@@ -8,6 +8,9 @@ abstract class ClasseDao {
   @Query("SELECT * FROM classe")
   Future<List<Classe>> findAll();
 
+  @Query("SELECT * FROM classe")
+  Stream<List<Classe>> findAllStream();
+
   @Query("SELECT * FROM classe WHERE id = :id")
   Future<Classe?> findById(int id);
 

@@ -13,7 +13,7 @@ abstract class ProfesseurDao {
   Future<Professeur?> findById(int id);
 
   @insert
-  Future<void> addProfesseur(Professeur professeur);
+  Future<void> insertProfesseur(Professeur professeur);
 
   @Update(
     onConflict: OnConflictStrategy.replace
